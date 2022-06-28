@@ -9,8 +9,9 @@
   fpPromise
     .then(fp => fp.get())
     .then(result => {
-      // This is the visitor identifier:
-      const visitorId = result.visitorId
-      console.log(visitorId)
+   
+      let pre = document.createElement('pre')
+            pre.textContent = JSON.stringify(result, undefined, 2)
+            document.body.append(pre)
     })
 </script>
