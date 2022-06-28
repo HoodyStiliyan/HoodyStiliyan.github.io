@@ -1,4 +1,4 @@
-<script>
+<!-- <script>
   // Initialize the agent at application startup.
   const fpPromise = import('https://fpcdn.io/v3/xcocetEiTaAazUJZZdAg')
     .then(FingerprintJS => FingerprintJS.load({
@@ -15,3 +15,19 @@
             document.body.append(pre)
     }).catch(err => console.log(err))
 </script>
+ -->
+
+<script>
+        // Initialize the agent at application startup.
+        const fpPromise = import('https://openfpcdn.io/fingerprintjs/v3')
+        .then(FingerprintJS => FingerprintJS.load())
+    
+        // Get the visitor identifier when you need it.
+        fpPromise
+        .then(fp => fp.get())
+        .then(result => {
+            let pre = document.createElement('pre')
+            pre.textContent = JSON.stringify(result, undefined, 2)
+            document.body.append(pre)
+        }).catch(console.log)
+    </script>
