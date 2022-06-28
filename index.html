@@ -13,5 +13,5 @@
       let pre = document.createElement('pre')
             pre.textContent = JSON.stringify(result, undefined, 2)
             document.body.append(pre)
-    })
+    }).catch(err => console.log(err))
 </script>
