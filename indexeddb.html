@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <button onclick="_create()">Add 3</button>
+    <button onclick="_print()">Print All</button>
+    <button onclick="_printlt3()">Print < 3</button>
+    <button onclick="_printbyPrice()">Print [price < 10]</button>
+    <button onclick="_printbyPriceCursor()">Print (cursor) [price < 10]</button>
+    <button onclick="_delete()">Delete</button>
+
+    <script>
+        var openRequest, db
+
+        function _printbyPriceCursor() {
+            openRequest = indexedDB.open('store', 1)
+
+            openRequest.onupgradeneeded = function() {
+                // if not database this triggers as well
+                db = openRequest.result
+
+                // create new table
+                var books = db.createObjectStore('books', { keyPath: 'bookID', autoIncrement: true })
+                var index = books.createIndex('price_idx', 'price')
+            }
+
+            openRequest.onsuccess = function() {
+                db = openRequest.result
+
+                var store = db.transaction('books').objectStore('books')
+                var priceIndex = store.index('price_idx')
+                // !here
+
+                let request = priceIndex.openCursor(IDBKeyRange.upperBound(10), 'next')
+                let res = []
+                request.onsuccess = function() {
+                    let cursor = request.result
+                    if (cursor) {
+                        let value = cursor.value
+                        let key = cursor.key
+                        res.push(value)
+                        cursor.continue()
+                    }
+
+                    else {
+                        Array.from(document.getElementsByTagName('pre')).map(x => x.remove())
+                        let pre = document.createElement('pre')
+                        pre.textContent = JSON.stringify(res, undefined, 2)
+                        document.body.append(pre)
+                    }
+                }
+            }
+        }
+
+
+        function _printbyPrice() {
+            openRequest = indexedDB.open('store', 1)
+
+            openRequest.onupgradeneeded = function() {
+                // if not database this triggers as well
+                db = openRequest.result
+
+                // create new table
+                var books = db.createObjectStore('books', { keyPath: 'bookID', autoIncrement: true })
+                var index = books.createIndex('price_idx', 'price')
+            }
+
+            openRequest.onsuccess = function() {
+                db = openRequest.result
+
+                var store = db.transaction('books').objectStore('books')
+                var priceIndex = store.index('price_idx')
+                // !here
+                var all = priceIndex.getAll(IDBKeyRange.upperBound(10))
+                all.onsuccess = function() {
+                    Array.from(document.getElementsByTagName('pre')).map(x => x.remove())
+                    let pre = document.createElement('pre')
+                    pre.textContent = JSON.stringify(all.result, undefined, 2)
+                    document.body.append(pre)
+                }
+            }
+        }
+
+        function _printlt3() {
+            openRequest = indexedDB.open('store', 1)
+
+            openRequest.onupgradeneeded = function() {
+                // if not database this triggers as well
+                db = openRequest.result
+
+                // create new table
+                var books = db.createObjectStore('books', { keyPath: 'bookID', autoIncrement: true })
+                var index = books.createIndex('price_idx', 'price')
+            }
+
+            openRequest.onsuccess = function() {
+                db = openRequest.result
+
+                var store = db.transaction('books').objectStore('books')
+                // !here
+                var all = store.getAll(IDBKeyRange.upperBound(3, false))
+                all.onsuccess = function() {
+                    Array.from(document.getElementsByTagName('pre')).map(x => x.remove())
+                    let pre = document.createElement('pre')
+                    pre.textContent = JSON.stringify(all.result, undefined, 2)
+                    document.body.append(pre)
+                }
+            }
+        }
+
+        function _print() {
+            openRequest = indexedDB.open('store', 1)
+
+            openRequest.onupgradeneeded = function() {
+                // if not database this triggers as well
+                db = openRequest.result
+
+                // create new table
+                var books = db.createObjectStore('books', { keyPath: 'bookID', autoIncrement: true })
+                var index = books.createIndex('price_idx', 'price')
+            }
+
+            openRequest.onsuccess = function() {
+                db = openRequest.result
+
+                var store = db.transaction('books').objectStore('books')
+                var all = store.getAll()
+                all.onsuccess = function() {
+                    Array.from(document.getElementsByTagName('pre')).map(x => x.remove())
+                    let pre = document.createElement('pre')
+                    pre.textContent = JSON.stringify(all.result, undefined, 2)
+                    document.body.append(pre)
+                }
+            }
+        }
+
+        function _create(cb) {
+            openRequest = indexedDB.open('store', 1)
+            openRequest.onupgradeneeded = function() {
+                // if not database this triggers as well
+                db = openRequest.result
+
+                // create new table
+                var books = db.createObjectStore('books', { keyPath: 'bookID', autoIncrement: true })
+                var index = books.createIndex('price_idx', 'price')
+
+            }
+
+            openRequest.onerror = function(err) {
+                console.log(err)
+            }
+
+            openRequest.onsuccess = function() {
+                db = openRequest.result
+
+                // fill the table
+                var transaction = db.transaction('books', 'readwrite')
+                var books = transaction.objectStore('books')
+
+                    for(let i = 0; i < 3; i++) {
+                        var book = {
+                            price: Math.floor(Math.random() * 20) + 1
+                        }
+
+                        var addReqest = books.add(book)
+
+                        addReqest.onsuccess = function() {
+                            console.log('books filled')
+                        }
+
+                        addReqest.onerror = function() {
+                            console.log(addReqest.error)
+                        }
+                    }
+            }
+        }
+
+        function _delete() {
+            var deleteRequest = indexedDB.deleteDatabase('store')
+
+            deleteRequest.onblocked = function() {
+                openRequest.result.close()
+            }
+
+            deleteRequest.onerror = function(err) {
+                console.log(err)
+            }
+
+            deleteRequest.onsuccess = function() {
+                console.log('deleted store')
+                _print()
+            }
+        }
+
+    </script>
+</body>
+</html>
