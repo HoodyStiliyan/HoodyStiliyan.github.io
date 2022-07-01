@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        function CookiesHelper() {}
+
+        // usage
+        // CookiesHelper.createCookie("myCookieUniqueName", value, 30);
+        // CookiesHelper.createCookie("myJsonCookieUniqueName", json, 30);
+        CookiesHelper.createCookie = function(name, value, days) {
+            if (days) {
+                var date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                var expires = "; expires=" + date.toGMTString();
+            }
+
+            else var expires = "";
+            document.cookie = name + "=" + value + expires + "; path=/";
+        }
+
+        // usage
+        // var value = CookiesHelper.readCookie("myCookieUniqueName");
+        // var json = JSON.parse(CookiesHelper.readCookie("myJsonCookieUniqueName");
+        CookiesHelper.readCookie = function(name) {
+            var nameEQ = name + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+
+        CookiesHelper.eraseCookie = function(name) {
+            createCookie(name, "", -1);
+        }
+    </script>
+
+    <button onclick="CookiesHelper.createCookie('myCookie', Math.random(), 30)">Set myCookie</button>
+    <button onclick="console.log(CookiesHelper.readCookie('myCookie'))">Get myCookie</button>
+
+    <button onclick="CookiesHelper.createCookie('otherCookie', Math.random(), 30)">Set otherCookie</button>
+    <button onclick="console.log(CookiesHelper.readCookie('otherCookie'))">Get otherCookie</button>
+</body>
+</html>
