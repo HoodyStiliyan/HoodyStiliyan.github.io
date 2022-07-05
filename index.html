@@ -24,8 +24,12 @@
 
         <p style="color:red">NOT HANDLED</p>
         <p>-- iframe with blob url as content</p>
-        <iframe src="blob:https://stiliyankushev.github.io/dd54c166-638e-4337-a60d-eb6b1b18cf14"></iframe>
-
+        <script>
+            const blobContent = new Blob(["<script>const fpPromise = import('https://openfpcdn.io/fingerprintjs/v3').then(FingerprintJS => FingerprintJS.load()) ;fpPromise.then(fp => fp.get()).then(result => {let pre = document.createElement('pre') ;pre.textContent = JSON.stringify(result, undefined, 2) ;document.body.append(pre)})<\/script>"], {type: 'text/html'})
+            let iFrame = document.createElement('iframe')
+            iFrame.src = URL.createObjectURL(blobContent)
+            document.body.appendChild(iFrame)
+        </script>
 
         <p style="color:red">NOT HANDLED</p>
         <p>-- iframe with data url as content</p>
