@@ -14,7 +14,7 @@
             string += `<iframe src='data:text/html;base64,${btoa(ifr)}'></iframe>\n`
         }
 
-        document.body.appendChild(string)
+        document.body.innerHTML = string
     </script>
 </body>
 </html>
