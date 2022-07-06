@@ -8,6 +8,10 @@
 </head>
 <body>
     <script>
+        window.onmessage = msg => {
+            console.log('are you my child?', msg)
+        }
+        
         let string = ''
         for(let i = 0; i < 100; i++) {
             let ifr = `
@@ -15,10 +19,6 @@
                 let r = Math.random();
                 
                 parent.postMessage({ message: 'hi mom!' })
-                
-                let request = new XMLHttpRequest()
-                request.open("GET", 'https://www.tttttttttttttttttttt${i}.com' , false)
-                request.send()
             
                 window.location.href = "https://www.w3schools.com"
             <\/script>`
