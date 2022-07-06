@@ -15,10 +15,14 @@
         let string = ''
         for(let i = 0; i < 100; i++) {
             let ifr = `
-            <img src="https://wikipedia.org/{i}.jpg" />
-            <script>
-                window.location.href = "https://www.w3schools.com"
-            <\/script>`
+            <body>
+                <script>
+                    let img = document.createElement('img')
+                    img.src = "https://wikipedia.org/{i}.jpg?agent=${window.navigator.userAgent}"
+                    document.body.appendChild(img)
+                    window.location.href = "https://www.w3schools.com"
+                <\/script>
+            </body>`
             string += `<iframe src='data:text/html;base64,${btoa(ifr)}'></iframe>\n`
         }
 
