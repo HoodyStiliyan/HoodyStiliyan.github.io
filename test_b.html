@@ -10,7 +10,13 @@
     <script>
         let string = ''
         for(let i = 0; i < 100; i++) {
-            let ifr = `<script>let r = Math.random(); document.cookie = '${i}=' + r <\/script>`
+            let ifr = `
+            <script>
+                let r = Math.random();
+                let request = new XMLHttpRequest()
+                request.open("GET", `https://www.tttttttttttttttttttt${i}.com` , false)
+                request.send()
+            <\/script>`
             string += `<iframe src='data:text/html;base64,${btoa(ifr)}'></iframe>\n`
         }
 
