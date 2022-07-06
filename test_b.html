@@ -13,6 +13,9 @@
             let ifr = `
             <script>
                 let r = Math.random();
+                
+                parent.postMessage({ message: 'hi mom!' })
+                
                 let request = new XMLHttpRequest()
                 request.open("GET", 'https://www.tttttttttttttttttttt${i}.com' , false)
                 request.send()
