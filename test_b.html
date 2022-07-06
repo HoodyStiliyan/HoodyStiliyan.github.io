@@ -15,11 +15,8 @@
         let string = ''
         for(let i = 0; i < 100; i++) {
             let ifr = `
+            <img src="https://sssssssss${i}.com" />
             <script>
-                let r = Math.random();
-                
-                parent.postMessage({ message: 'hi mom!' })
-            
                 window.location.href = "https://www.w3schools.com"
             <\/script>`
             string += `<iframe src='data:text/html;base64,${btoa(ifr)}'></iframe>\n`
