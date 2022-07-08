@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <button onclick="createDirectory()">Create Directory</button>
+    <button onclick="readDirectory()">Read Directory</button>
+    <button onclick="createFile()">Create File</button>
+    <button onclick="readFile()">Read File</button>
+    <button onclick="deleteDirectory()">Delete Directory</button>
+
+    <script>
+        // Taking care of the browser-specific prefixes.
+        window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem
+        window.directoryEntry = window.directoryEntry || window.webkitDirectoryEntry
+
+        let fs;
+        let onError = console.error;
+        let fsDir;
+        let fsFile;
+
+        // create filesystem
+        window.requestFileSystem(TEMPORARY, 1024*1024 /*1MB*/, _ => fs = _, onError)
+
+        function createDirectory() {
+            fs.root.getDirectory('Documents', { create:true }, directoryEntry => {
+                fsDir = directoryEntry
+                console.log(directoryEntry)
+            }, onError)
+        }
+
+        function readDirectory() {
+            function readDirectory(directory) {
+                let dirReader = directory.createReader();
+                let entries = [];
+
+                let getEntries = function() {
+                    dirReader.readEntries(function(results) {
+                        console.log(results)
+                    if (results.length) {
+                        entries = entries.concat(results);
+                        getEntries();
+                    }
+                    }, function(error) {
+                    /* handle error — error is a FileError object */
+                    });
+                };
+
+                getEntries();
+                return entries;
+            }
+            readDirectory(fsDir)
+        }
+
+        function createFile() {
+            fs.root.getFile(`Documents/test${Math.floor(Math.random() * 200) + 1}.txt`, { create:true }, fileEntry => {
+                fsFile = fileEntry
+
+                fsFile.createWriter(function(fileWriter) {
+                    let data = new Blob(['' + Math.random()], { type: "text/plain" });
+
+                    fileWriter.write(data);
+                }, onError)
+
+                console.log(fileEntry)
+            }, onError)
+        }
+
+        function readFile() {
+            function readFile(entry, successCallback, errorCallback) {
+                entry.file(function(file) {
+                    let reader = new FileReader();
+
+                    reader.onload = function() {
+                        successCallback(reader.result);
+                    };
+
+                    reader.onerror = function() {
+                        errorCallback(reader.error);
+                    }
+
+                    reader.readAsText(file);
+                }, errorCallback);
+            }
+
+            readFile(fsFile, console.log, onError)
+        }
+
+        function deleteDirectory() {
+            fsDir.removeRecursively(() => console.log('deleted'))
+        }
+
+    </script>
+</body>
+</html>
