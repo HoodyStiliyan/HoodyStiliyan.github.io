@@ -10,7 +10,7 @@
     <button onclick="onClick()">Set random item</button>
     <script>
         function onClick() {
-            sessionStorage.setItem(Math.random(), Math.random())
+            localStorage.setItem(Math.random(), Math.random())
         }
 
         addEventListener('storage', event => console.log(`listner 1: ${event}`))
