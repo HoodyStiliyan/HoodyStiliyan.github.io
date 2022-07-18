@@ -8,6 +8,8 @@
     </head>
     <body>
         <iframe id="iframe1" srcdoc="<p>asd</p>" onload="alert(1)" ></iframe>
+        <iframe id="iframe2" srcdoc="<p>asd</p>" onload="alert(111)" ></iframe>
+
         <button onclick="onClick()">do magic</button>
         <script>
         document.getElementById('iframe1').addEventListener('load', e => {
@@ -15,8 +17,14 @@
             console.log(document.getElementById('iframe1').contentWindow.document.body)
         })
 
+        document.getElementById('iframe2').addEventListener('load', e => {
+            alert('onload in script 22222')
+            console.log(document.getElementById('iframe2').contentWindow.document.body)
+        })
+
         alert(2)
         console.log(document.getElementById('iframe1').contentWindow.document.body)
+        console.log(document.getElementById('iframe2').contentWindow.document.body)
 
         async function onClick() {
             console.log('button clicked')
