@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+    </head>
+    <body>
+        <iframe id="iframe1" srcdoc="<p>asd</p>" onload="alert(1)" ></iframe>
+        <button onclick="onClick()">do magic</button>
+        <script>
+        alert(2)
+        console.log(document.getElementById('iframe1').contentWindow.document.body)
+
+        async function onClick() {
+            console.log('button clicked')
+
+            // const fr = document.createElement('iframe')
+            // fr.srcdoc = ''
+            // document.body.appendChild(fr)
+            // const span = document.createElement('span')
+            // span.textContent = '123123123'
+            // fr.contentWindow.document.body.appendChild(span)
+            // console.log(fr.contentWindow.document.body)
+
+            // return 
+
+            // ///////
+
+            const defaultText = 'mmMwWLliI0fiflO&1'
+
+            /**
+             * Settings of text blocks to measure. The keys are random but persistent words.
+             */
+           const presets = {
+            /**
+             * The default font. User can change it in desktop Chrome, desktop Firefox, IE 11,
+             * Android Chrome (but only when the size is ≥ than the default) and Android Firefox.
+             */
+            default: [],
+            /** OS font on macOS. User can change its size and weight. Applies after Safari restart. */
+            apple: [{ font: '-apple-system-body' }],
+            /** User can change it in desktop Chrome and desktop Firefox. */
+            serif: [{ fontFamily: 'serif' }],
+            /** User can change it in desktop Chrome and desktop Firefox. */
+            sans: [{ fontFamily: 'sans-serif' }],
+            /** User can change it in desktop Chrome and desktop Firefox. */
+            mono: [{ fontFamily: 'monospace' }],
+            /**
+             * Check the smallest allowed font size. User can change it in desktop Chrome, desktop Firefox and desktop Safari.
+             * The height can be 0 in Chrome on a retina display.
+             */
+            min: [{ fontSize: '1px' }],
+            /** Tells one OS from another in desktop Chrome. */
+            system: [{ fontFamily: 'system-ui' }],
+            }
+
+
+            function wait(ms) {
+                return new Promise(resolve => {
+                    setTimeout(resolve, ms)
+                })
+            }
+
+             async function getFontPreferences(){
+                return  withNaturalFonts((document, container) => {
+                    const elements = {}
+                    const sizes = {}
+
+                    // First create all elements to measure. If the DOM steps below are done in a single cycle,
+                    // browser will alternate tree modification and layout reading, that is very slow.
+                    for (const key of Object.keys(presets)) {
+                    const [style = {}, text = defaultText] = presets[key]
+
+                    const element = document.createElement('span')
+                    element.textContent = text
+                    element.style.whiteSpace = 'nowrap'
+
+                    for (const name of Object.keys(style)) {
+                        const value = style[name]
+                        if (value !== undefined) {
+                        element.style[name] = value
+                        }
+                    }
+
+                    elements[key] = element
+                    container.appendChild(document.createElement('br'))
+                    container.appendChild(element)
+                    }
+
+                    // Then measure the created elements
+                    for (const key of Object.keys(presets)) {
+                    sizes[key] = elements[key].getBoundingClientRect().width
+                    }
+
+                    return sizes
+                })
+            }
+            /**
+             * Creates a DOM environment that provides the most natural font available, including Android OS font.
+             * Measurements of the elements are zoom-independent.
+             * Don't put a content to measure inside an absolutely positioned element.
+             */
+             function withNaturalFonts( action, containerWidthPx = 4000){
+                return  withIframe((_, iframeWindow) => {
+                    const iframeDocument = iframeWindow.document
+                    const iframeBody = iframeDocument.body
+
+                    const bodyStyle = iframeBody.style
+                    bodyStyle.width = `${containerWidthPx}px`
+                    bodyStyle.webkitTextSizeAdjust = bodyStyle.textSizeAdjust = 'none'
+
+                    const isChromium = () => true;
+                    const isWebKit = () => false;
+
+                    // chrome specific stuff
+                    iframeBody.style.zoom = `${1 / iframeWindow.devicePixelRatio}`
+
+                    // See the big comment above
+                    const linesOfText = iframeDocument.createElement('div')
+                    linesOfText.textContent = [...Array((containerWidthPx / 20) << 0)].map(() => 'word').join(' ')
+                    iframeBody.appendChild(linesOfText)
+
+                    return action(iframeDocument, iframeBody)
+                }, '<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1">')
+            }
+
+            async function withIframe(
+                action,
+                initialHtml,
+                domPollInterval = 50,
+            ) {
+                const d = document
+
+                // document.body can be null while the page is loading
+                while (!d.body) {
+                    await wait(domPollInterval)
+                }
+
+                const iframe = d.createElement('iframe')
+
+                try {
+                    await new Promise((_resolve, _reject) => {
+                    let isComplete = false
+                    const resolve = () => {
+                        isComplete = true
+                        _resolve()
+                    }
+                    const reject = (error) => {
+                        isComplete = true
+                        _reject(error)
+                    }
+
+                    iframe.onload = resolve
+                    iframe.onerror = reject
+                    const { style } = iframe
+                    style.setProperty('display', 'block', 'important') // Required for browsers to calculate the layout
+                    style.position = 'absolute'
+                    style.top = '0'
+                    style.left = '0'
+                    style.visibility = 'hidden'
+                    if (initialHtml && 'srcdoc' in iframe) {
+                        iframe.srcdoc = initialHtml
+                    } else {
+                        iframe.src = 'about:blank'
+                    }
+                    d.body.appendChild(iframe)
+
+                    // WebKit in WeChat doesn't fire the iframe's `onload` for some reason.
+                    // This code checks for the loading state manually.
+                    // See https://github.com/fingerprintjs/fingerprintjs/issues/645
+                    const checkReadyState = () => {
+                        // The ready state may never become 'complete' in Firefox despite the 'load' event being fired.
+                        // So an infinite setTimeout loop can happen without this check.
+                        // See https://github.com/fingerprintjs/fingerprintjs/pull/716#issuecomment-986898796
+                        if (isComplete) {
+                        return
+                        }
+
+                        // Make sure iframe.contentWindow and iframe.contentWindow.document are both loaded
+                        // The contentWindow.document can miss in JSDOM (https://github.com/jsdom/jsdom).
+                        if (iframe.contentWindow?.document?.readyState === 'complete') {
+                        resolve()
+                        } else {
+                        setTimeout(checkReadyState, 10)
+                        }
+                    }
+                    checkReadyState()
+                    })
+
+                    while (!iframe.contentWindow?.document?.body) {
+                    await wait(domPollInterval)
+                    }
+
+                    return await action(iframe, iframe.contentWindow)
+                } catch {}
+            }
+        
+            console.log(await getFontPreferences())
+        }
+    </script>
+    </body>
+</html>
