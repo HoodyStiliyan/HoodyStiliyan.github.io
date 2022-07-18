@@ -10,6 +10,11 @@
         <iframe id="iframe1" srcdoc="<p>asd</p>" onload="alert(1)" ></iframe>
         <button onclick="onClick()">do magic</button>
         <script>
+        document.getElementById('iframe1').addEventListener('load', e => {
+            alert('onload in script')
+            console.log(document.getElementById('iframe1').contentWindow.document.body)
+        })
+
         alert(2)
         console.log(document.getElementById('iframe1').contentWindow.document.body)
 
