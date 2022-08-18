@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hoody Fingerprinting Testing Environment</title>
+</head>
+<body>
+    <br><hr>
+    <p>This test runs FingerprintJS in every possible way. All iframes types and the current page.</p>
+    <a href="https://hoodystiliyan.github.io">Test FingerprintJS inside the page and iframes</a><br>
+    <br><hr>
+    <p>This test is a basic cookie editor. There are two tabs. One has cookie controls, the other an iframe of the first tab.</p>
+    <p>If spoofed, both controls should not read the same data, because of different tab hostnames.</p>
+    <a href="https://hoodystiliyan.github.io/cookie.html">Test Cookies [Host]</a><br><a href="https://stiliyankushev.github.io/cookie.html">Test Cookies [IFrame]</a><br>
+    <br><hr>
+    <p>This test, like the cookies, consists of two tabs that have controls for *chrome only* FS API</p>
+    <p>If spoofed, both controls should not read the same data, because of different tab hostnames.</p>
+    <a href="https://hoodystiliyan.github.io/fs.html">Test FileSystem [Host]</a><br><a href="https://stiliyankushev.github.io/fs.html">Test FileSystem [IFrame]</a><br>
+    <br><hr>
+    <p>This test fires a bunch of messages upon iframe loading. It uses different methods of on load events, and even tries to get the data before the event itself.</p>
+    <p>If spoofed, ... todo</p>
+    <a href="https://hoodystiliyan.github.io/iframesizecheck2.html">Test Iframe Event Spoofing</a><br>
+    <br><hr>
+    <p>This test, again, consists of two tabs. You get the gist of it, this time however it's the indexedDB api</p>
+    <p>If spoofed, both controls should not read the same data, because of different tab hostnames.</p>
+    <p>NOTE: The delete button is slow and buggy, that's the case reguardless if Hoody is there or not. (My bad) PS: It still works if you refresh the page after delete tho.</p>
+    <a href="https://hoodystiliyan.github.io/indexeddb.html">Test Indexed DB [Host]</a><br><a href="https://stiliyankushev.github.io/indexeddb.html">Test Indexed DB [IFrame]</a><br>
+    <br><hr>
+    <p>And again, two tabs, etc, etc, this time testing the on storage event of the page.</p>
+    <p>If spoofed, both pages should be clueless of one another, and no "on storage" event should be loaded.</p>
+    <a href="https://hoodystiliyan.github.io/onstorage.html">Test on storage event Spoofing [Host]</a><br><a href="https://hoodystiliyan.github.io/onstorage.html">Test on storage event Spoofing [IFrame]</a><br>
+    <br><hr>
+    <p>This test basically renders a page that makes a request for a service worker.</p>
+    <p>If spoofed, the service worker code (check in Dev Tools) should be wrapped inside a wrapper, with the tab hostname injected inside.</p>
+    <p>Note: for best results, always unregister AND stop all service workers from "chrome://serviceworker-internals"</p>
+    <a href="https://hoodystiliyan.github.io/service-worker.html">Test service worker tab hostname injection</a><br>
+    <br><hr>
+    <p>todo</p>
+    <a href="https://hoodystiliyan.github.io/specialworkers.html">Test special web workers</a><br>
+    <br><hr>
+    <p>This test, like the rest, has two pages, with controls reguarding the localStorage and sessionStorage APIs</p>
+    <p>If spoofed, both controls should not read the same data, because of different tab hostnames.</p>
+    <a href="https://hoodystiliyan.github.io/storage.html">Test local storage and session storage [Host]</a><br><a href="https://stiliyankushev.github.io/storage.html">Test local storage and session storage [IFrame]</a><br>
+    <br><hr>
+</body>
+</html>

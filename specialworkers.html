@@ -1,3 +1,5 @@
+<!-- todo: take a look at worker.navigator and worker.performance (and window.performance for that matter) -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -34,7 +36,7 @@
                     resolve({
                         keys: await caches.keys(),
                         has: await caches.has(name),
-                        match: (await caches.match(req)).status,
+                        match: (await caches.match(req))?.status,
                         deletedAfter10sec: !!setTimeout(() => caches.delete(name), 10_000),
                     })
                 })
@@ -232,15 +234,12 @@
             }
         }
 
-
         function webWorkerFunction(test1, test2) {
             var self = this;
             self.onmessage = function(e) {
-                var ret = test1()
-                    if(ret) ret.then(data => {
-                        var ret = test2()
-                        self.postMessage(data)
-                    })
+                Promise.all([test1(), test2()]).then(res => {
+                    self.postMessage(res)
+                })
             }
         }
 
@@ -248,11 +247,9 @@
             onconnect = function (e) {
                 var port = e.ports[0]
 
-                port.onmessage = async function (e) {
-                    var ret = test1()
-                    if(ret) ret.then(data => {
-                        var ret = test2()
-                        port.postMessage(data)
+                port.onmessage = function (e) {
+                    Promise.all([test1(), test2()]).then(res => {
+                        port.postMessage(res)
                     })
                 }
             }
