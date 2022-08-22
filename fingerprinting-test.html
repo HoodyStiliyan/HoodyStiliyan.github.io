@@ -37,7 +37,9 @@
     <p>Note: for best results, always unregister AND stop all service workers from "chrome://serviceworker-internals"</p>
     <a href="https://hoodystiliyan.github.io/service-worker.html">Test service worker tab hostname injection</a><br>
     <br><hr>
-    <p>todo</p>
+    <p>This test attempts to access special window objects to determine the access level of each worker type. At the time of writing this 8/22/2022, Data URI web worker and Data URI shared web worker don't have any access to cache or db. Shared Blob web worker has access to cache (with some limitations) and indexedDB (messages are inside the chrome: workers url). Blob web worker (not shared) only has access to indexedDB</p>
+    <p>If spoofed, the blob worker code (check in Dev Tools) should be wrapped inside a wrapper, with the tab hostname injected inside.</p>
+    <p>If spoofed, the shared blob worker code (check in chrome://inspect/#workers) should be wrapped inside a wrapper, with the tab hostname injected inside.</p>
     <a href="https://hoodystiliyan.github.io/specialworkers.html">Test special web workers</a><br>
     <br><hr>
     <p>This test, like the rest, has two pages, with controls reguarding the localStorage and sessionStorage APIs</p>
