@@ -234,29 +234,37 @@
             }
         }
 
-        function webWorkerFunction(test1, test2) {
+        function testNavigator() {
+            return function() {
+                try { navigator } catch { return new Promise(() => {}) }
+                console.log(navigator)
+                return new Promise( async (resolve, reject) => { resolve('navigator printed.') })
+            }
+        }
+
+        function webWorkerFunction(test1, test2, test3) {
             var self = this;
             self.onmessage = function(e) {
-                Promise.all([test1(), test2()]).then(res => {
+                Promise.all([test1(), test2(), test3()]).then(res => {
                     self.postMessage(res)
                 })
             }
         }
 
-        function sharedWebWorkerFunction(test1, test2) {
+        function sharedWebWorkerFunction(test1, test2, test3) {
             onconnect = function (e) {
                 var port = e.ports[0]
 
                 port.onmessage = function (e) {
-                    Promise.all([test1(), test2()]).then(res => {
+                    Promise.all([test1(), test2(), test3()]).then(res => {
                         port.postMessage(res)
                     })
                 }
             }
         }
 
-        var dataObj = strFunc(webWorkerFunction, strFunc(testCache), strFunc(testIndexedDB))
-        var dataObj1 = strFunc(sharedWebWorkerFunction, strFunc(testCache), strFunc(testIndexedDB))
+        var dataObj = strFunc(webWorkerFunction, strFunc(testCache), strFunc(testIndexedDB), strFunc(testNavigator))
+        var dataObj1 = strFunc(sharedWebWorkerFunction, strFunc(testCache), strFunc(testIndexedDB), strFunc(testNavigator))
 
         function blobWebWorker() {
             var blob = new Blob([dataObj.replace('"use strict";', '')])
